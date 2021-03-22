@@ -21,16 +21,14 @@ char* encodeRot13String(char* s)
     //how big will my output be?
     int length = stringLength(s);
     char* answer = (char*)malloc(length * (int)sizeof(char));
-    int s;
-    int *ps;
-    ps = s;
-    return ps;
-    
-    //finishing writing this function such that it returns a new string
-    //which is the s encoded in rot13.  You should use old school pointer
-    //math whenever possible.
-
-
+    char temp;
+    for(int i = 0; i < length; i++)
+    {
+        temp = encodeRot13(*(s + i));
+        *(answer + i) = temp;
+    }
+    *(answer + length) = '\0';
+    return answer;
 }
 
 int stringLength(char* s)
