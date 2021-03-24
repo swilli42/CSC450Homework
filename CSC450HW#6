@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+char encodeRot13(char c);
+int indexOf(char c, char* s);
+int stringLength(char* s);
+char* encodeRot13String(char* s);
+
+int main(int argc, char** argv)
+{
+    char* encodedString = encodeRot13String("My Name is Sam");
+    printf("encoded string is: %s", encodedString);
+    
+    char parent_message[] = encodedString; 
+    char child_message[] = "goodbye"; 
+
+    void* shmem = create_shared_memory(128);
+
+    memcpy(shmem, parent_message, sizeof(parent_message));
+
+    int pid = fork();
+
+    if (pid == 0) 
+    {
+        printf("Child read: %s\n", shmem);
+        memcpy(shmem, child_message, sizeof(child_message));
+        printf("Child wrote: %s\n", shmem);
+
+    } 
+    else 
+    {
+        printf("Parent read: %s\n", shmem);
+        sleep(1);
+        printf("After 1s, parent read: %s\n", shmem);
+    }
+}
+
+char* encodeRot13String(char* s)
+{
+    //how big will my output be?
+    int length = stringLength(s);
+    char* answer = (char*)malloc(length * (int)sizeof(char) + 1);
+    char temp;
+    for(int i = 0; i < length; i++)
+    {
+        temp = encodeRot13(*(s + i));
+        *(answer + i) = temp;
+    }
+    *(answer + length) = '\0';
+    return answer;
+}
+
+int stringLength(char* s)
+{
+    int count = 0;
+    while(*s != '\0')
+    {
+        count++;
+        s = s + 1;
+    }
+    return count;
+}
+
+char encodeRot13(char c)
+{
+    char* alphabet = "abcdefghijklmnopqrstuvwxyz";
+    int index = indexOf(c, alphabet);
+    //printf("%d\n", index);
+    index = (index + 13)%26; //17 + 13 = 30
+    //printf("%d\n", index);
+    //return alphabet[index];
+    return *(alphabet + index);
+}
+
+int indexOf(char c, char* s)
+{
+    int s_length = stringLength(s);
+    for(int i = 0; i < s_length; i++)
+    {
+        if(c  == *(s+i))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void* create_shared_memory(size_t size) {
+  int protection = PROT_READ | PROT_WRITE;
+
+  int visibility = MAP_SHARED | MAP_ANONYMOUS;
+
+  return mmap(NULL, size, protection, visibility, -1, 0);
+}
