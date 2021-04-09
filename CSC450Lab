@@ -1,0 +1,69 @@
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<time.h>
+
+void printRandoms(int lower, int upper, int count)
+{
+    int i;
+    for (i = 0; i < count; i++) 
+    {
+        int num = (rand() % (upper - lower + 1)) + lower;
+        printf("%d ", num);
+    }
+}
+
+void sig_handler_parent(int signum)
+{ 
+    
+  printf("Parent : Received a response signal from child \n");
+}
+
+void sig_handler_child(int signum)
+{
+  printf("Child : Received a signal from parent \n");
+  sleep(1);
+  kill(getppid(),SIGUSR1);
+}
+
+
+
+int main()
+{
+        int p;
+        int lower = 5, upper = 20, count = 1;
+        srand(time(0));
+        printRandoms(lower, upper, count);
+        printf("Parent: I have %d Hitpoints", printRandoms);
+        scanf("%d", printRandoms);
+        return 0;
+    
+    pid_t pid;
+    if((pid=fork())<0)
+    {
+        printf("Fork Failed\n");
+        exit(1);
+    }
+    /* Child Process */
+    else if(pid==0)
+    {
+        int C;
+        c = 1;
+        signal(SIGUSR1,sig_handler_child); // Register signal handler
+        printf("Child: waiting for my brothers");
+        printf("Child: attack:")
+        pause();
+    }
+    /* Parent Process */
+    else
+    {
+        signal(SIGUSR1,sig_handler_parent); // Register signal handler
+        sleep(1);
+        printf("Parent: I am dead\n");
+        kill(pid,SIGUSR1);
+        printf("Parent: Ouch\n");
+        pause();
+    }
+    return 0;
+}
